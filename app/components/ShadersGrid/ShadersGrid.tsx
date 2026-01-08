@@ -33,7 +33,8 @@ export default function ShadersGrid({ shaders }: { shaders: Shader[] }) {
   frameloop="always"
   dpr={[1, 2]}
         
-        eventSource={containerRef as React.RefObject<HTMLElement>}
+        //eventSource={containerRef as React.RefObject<HTMLElement>}
+        eventSource={typeof document !== 'undefined' ? document.body : undefined}
         
       >
         <View.Port />
