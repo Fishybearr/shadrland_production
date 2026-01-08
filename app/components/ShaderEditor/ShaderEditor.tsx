@@ -1,0 +1,219 @@
+'use client'
+import React, { useState, useCallback, useEffect } from 'react';
+import { useShaderContext } from '../../context/ShaderContext'; 
+import styles  from './ShaderEditor.module.css';
+import CodeEditor from '@uiw/react-textarea-code-editor';
+import { UpdateShader } from '@/app/actions/UpdateShader';
+import { ShaderSaveAs } from '@/app/actions/ShaderSaveAs'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Shader } from '@/prisma/app/generated/prisma/client';
+
+//This is the actual editor for pre existing shaders
+// Needs to validate the user and read input from the
+// passed in shaderID
+
+
+
+export default function ShaderEditor({ shader } : {shader: Shader}) {
+    const { setShaderText } = useShaderContext(); 
+    const [inputText, setInputText] = useState(shader.shaderText);
+
+    //get the session info
+    const { data: session, status } = useSession()
+
+    //create a router
+    const router = useRouter();
+
+    const handleLoginClick = () => 
+        {
+            router.push("/login")
+        }
+
+    
+    //get the title from our passed in shader
+    const shaderTitle = shader?.title || "Untitled Shader";
+    
+    //TODO: create a text box that can be used to set this shader title
+    // Possibly in a popup
+    const [title, setTitle] = useState(shaderTitle)
+
+    const [shaderVis, setShaderVis] = useState(true);
+
+    // If this is false, we want to update the 
+    // save functionality to
+    // create a new shader
+    // with our current user's id, and all of the
+    // code from our editor
+    // Possibly keep some kind of record of who
+    // this was forked from
+    // Then reroute to the new shader url
+    const isOwner = session?.user?.id === shader.authorId;
+
+    const handleShaderSave = async () => 
+        {
+            if(inputText === "" || null)
+                {
+                    alert("Error: Shader is empty")
+                    return
+                }
+                
+            const result = await UpdateShader(inputText,title,shaderVis,shader.id);
+            if(result.success)
+                {
+                    alert("Shader Updated");
+                }
+            else
+                {
+                    alert("Error: " + result.error)
+                }
+        }
+
+
+        //Used for "forking" a shader to a new user
+        const handleShaderSaveAs = async () => 
+        {
+            if(inputText === "" || null)
+                {
+                    alert("Error: Shader is empty")
+                    return
+                }
+                
+            const result = await ShaderSaveAs(inputText,title,shaderVis);
+            if(result.success)
+                {
+                    alert("New shader created");
+                    //Reroute to new shader here
+                    router.push(`/shader/${result.shaderId}`)
+                }
+            else
+                {
+                    alert("Error: " + result.error)
+                }
+        }
+    
+
+    const handleCaptureClick = useCallback(() => {
+        setShaderText(inputText); 
+        //console.log('Shader saved via shortcut or button');
+    }, [inputText, setShaderText]);
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            // Check for Ctrl+S (Windows/Linux) or Cmd+S (Mac)
+            if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+                event.preventDefault(); // Stop browser from opening "Save Page" dialog
+                handleCaptureClick();
+            }
+        };
+
+        // Attach event listener
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Cleanup: remove listener when component unmounts
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleCaptureClick]); // Re-bind whenever handleCaptureClick updates
+    // ------------------------------------
+
+    return (
+        <div className={styles.mainContainer}>
+            <h3>GLSL Fragment Shader Editor</h3>
+            
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className='m-0.5'></input>
+
+            {/*Create an input with a checkbox here that uses onChange with the visibilityBool */}
+            <label htmlFor="privBox">Public </label>
+            <input name='privBox' type="checkbox" defaultChecked={shader.public} onChange={(e) => setShaderVis(e.target.checked)}></input>
+            
+        
+            <CodeEditor
+                value={inputText}
+                language="glsl"
+                autoCapitalize="none"
+                placeholder="Write your GLSL Fragment Shader code here. Press Ctrl+S to compile."
+                onChange={(e) => setInputText(e.target.value)}
+                padding={15}
+                 style={{
+                    fontSize: 14,
+                    backgroundColor: "#1e1e1e",
+                    fontFamily: 'Fira Code, monospace',
+                    borderRadius: '5px',
+                    minHeight: 250,
+                    marginBottom: '10px'
+                }}
+            />
+            
+            <button 
+                onClick={handleCaptureClick}
+                style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#0070f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                }}
+            >
+              Compile Shader (Ctrl+S)
+            </button>
+
+            {/* TODO: update this to show 
+            update for owner,
+            forl for other logged in user,
+            login, for logged out user
+             */}
+
+
+                {session? ( isOwner ?
+            (<button 
+                onClick={handleShaderSave}
+                style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#0070f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                }}
+            >
+              Update Shader
+            </button>)
+
+            : (<button 
+                onClick={handleShaderSaveAs}
+                style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#0070f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                }}
+            >
+              Save Shader
+            </button>)
+            ) : 
+            (<button 
+                onClick={handleLoginClick}
+                style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#0070f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                }}
+            >
+              Login to save
+            </button>)}
+
+            {/*session? (<p>logged in</p>) : (<p>logged out</p>)*/}
+        </div>
+    );
+}
