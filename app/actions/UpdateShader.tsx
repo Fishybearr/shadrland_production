@@ -21,7 +21,8 @@ export async function UpdateShader(shaderText: string, shaderTitle: string, isPu
                 shaderText: shaderText,
                 title: shaderTitle,
                 authorId: session.user?.id,
-                public: isPublic
+                public: isPublic,
+                updatedAt: new Date(),
             }
         })
 
