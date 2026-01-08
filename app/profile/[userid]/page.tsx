@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth"
 import Navbar from "@/app/components/NavBar/navbar";
 import ShadersGrid from "@/app/components/ShadersGrid/ShadersGrid";
+import { Prisma } from "@/prisma/app/generated/prisma/client";
 
+type ShaderWithAuthor = Prisma.ShaderGetPayload<{
+  include: { author: true }
+}>;
 
 interface ProfilePageProps
 {
@@ -38,28 +42,44 @@ export default async function ProfilePage({params}: ProfilePageProps)
     {/*Check if logged in user is the owner of this page */}
     const isOwner = session?.user?.id === user.id;
 
+    //Need to only display private shaders if logged in user
+    // is shader owner
+
     //Shaders Array
     const shaders = user.shaders.reverse();
 
+    let shaderList: ShaderWithAuthor[] = [];
+
+    //If this is true then we can show private shaders
+    if(shaders.length > 0)
+        {
+            if(shaders[0].authorId === session?.user?.id)
+                {
+                    shaderList = shaders;
+                }
+
+            else
+                {
+                    for(let i = 0; i < shaders.length; i++)
+                    {
+
+                        if(shaders[i].public)
+                            {
+                                shaderList.push(shaders[i])
+                            }
+                    }
+                }
+        }
+
+    
+
     return(<>
     <Navbar />
-    
-    <p>Email: {user.email}</p>
-    <p>Name: {user.name}</p>
-    {/*<p>First Shader: {user.shaders[0].title}</p> */}
-    {/*<ul>
-    {user.shaders.map((shader) => (
-        <li key={shader.id}>{shader.title},{shader.id}</li>
-    ))}
-    </ul> */}
-    
 
-    {/*show an edit page button if the owner of the
-    page is logged in*/}
-    {isOwner && (<button>Edit Page</button>)}
-
+    <br></br>
+    
     <main>
-        <ShadersGrid shaders={shaders}></ShadersGrid>
+        <ShadersGrid shaders={shaderList}></ShadersGrid>
     </main>
 
 {/*

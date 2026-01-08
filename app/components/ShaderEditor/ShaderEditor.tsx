@@ -8,10 +8,10 @@ import { ShaderSaveAs } from '@/app/actions/ShaderSaveAs';
 import { DeletShader } from '@/app/actions/DeleteShader';
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Shader } from '@/prisma/app/generated/prisma/client';
 import Image from "next/image"
 import PopupModal from "../../components/PopupModal/PopupModal"
 import { Prisma } from "@/prisma/app/generated/prisma/client";
+import Link from 'next/link';
 
 //This is the actual editor for pre existing shaders
 // Needs to validate the user and read input from the
@@ -153,7 +153,7 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
 
             {/*show trash can if owner is viewing shader */}
             {(session?.user?.id === shader.authorId) ? (<Image onClick={() => setIsImageModalOpen(true)} style={{marginLeft: 'auto', color:'#ff0000'}} src={'/assets/icons/bin.png'} alt='trash' width={24} height={24}></Image>) :
-            (<p style={{marginLeft: 'auto'}}> By {shader.author.name}</p>)}
+            (<Link href={`/profile/${shader.author.name}`} style={{marginLeft: 'auto'}}> By {shader.author.name}</Link>)}
 
             <PopupModal 
             isOpen={isImageModalOpen} 
