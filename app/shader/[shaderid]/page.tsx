@@ -39,17 +39,17 @@ export default async function EditShader({params}: EditPageProps)
         
     return(<>
     <Navbar />
-    <h1>Edit Shader page, {session?.user?.name}</h1>
+    {/*<h1>Edit Shader page, {session?.user?.name}</h1>*/}
 
         {/*TODO: Make sure that Fork Shader validate if user is logged in
         OR just remove the Fork Shader button if user is not logged in*/}
-    {isOwner? (<button>Save Shader</button>) : (<button>Fork Shader</button>)}
-    <p>{shader.title}</p>
+    {/*isOwner? (<button>Save Shader</button>) : (<button>Fork Shader</button>) */}
+    {/*<p>{shader.title}</p> */}
 
     { /*if user owns shader we can let them save it,
      otherwise they can just compile and fork */}
 
-     <main>
+     <main className="flex min-h-screen w-full items-center justify-center">
         <EditShaderClientSide shader={shader}/>
      </main>
     </>)

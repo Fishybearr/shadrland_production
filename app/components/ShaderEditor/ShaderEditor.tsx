@@ -4,10 +4,13 @@ import { useShaderContext } from '../../context/ShaderContext';
 import styles  from './ShaderEditor.module.css';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { UpdateShader } from '@/app/actions/UpdateShader';
-import { ShaderSaveAs } from '@/app/actions/ShaderSaveAs'
+import { ShaderSaveAs } from '@/app/actions/ShaderSaveAs';
+import { DeletShader } from '@/app/actions/DeleteShader';
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Shader } from '@/prisma/app/generated/prisma/client';
+import Image from "next/image"
+import PopupModal from "../../components/PopupModal/PopupModal"
 
 //This is the actual editor for pre existing shaders
 // Needs to validate the user and read input from the
@@ -16,6 +19,7 @@ import { Shader } from '@/prisma/app/generated/prisma/client';
 
 
 export default function ShaderEditor({ shader } : {shader: Shader}) {
+
     const { setShaderText } = useShaderContext(); 
     const [inputText, setInputText] = useState(shader.shaderText);
 
@@ -91,6 +95,22 @@ export default function ShaderEditor({ shader } : {shader: Shader}) {
                     alert("Error: " + result.error)
                 }
         }
+
+        //Used for deleting a shader
+        const handleDeleteShader = async () => 
+        {       
+            const result = await DeletShader(shader.id);
+            if(result.success)
+                {
+                    //Reroute to new shader here
+                    router.push(`/profile/${session?.user?.name}`)
+                }
+            else
+                {
+                    alert("Error: " + result.error)
+                }
+        }
+
     
 
     const handleCaptureClick = useCallback(() => {
@@ -117,15 +137,55 @@ export default function ShaderEditor({ shader } : {shader: Shader}) {
     }, [handleCaptureClick]); // Re-bind whenever handleCaptureClick updates
     // ------------------------------------
 
+
+        const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
     return (
         <div className={styles.mainContainer}>
-            <h3>GLSL Fragment Shader Editor</h3>
-            
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className='m-0.5'></input>
+
+            <div className="flex items-center gap-4">
+             <h3>GLSL Fragment Shader Editor</h3>
+
+            {/*show trash can if owner is viewing shader */}
+            {(session?.user?.id === shader.authorId) && <Image onClick={() => setIsImageModalOpen(true)} style={{marginLeft: 'auto', color:'#ff0000'}} src={'/assets/icons/bin.png'} alt='trash' width={24} height={24}></Image>}
+
+            <PopupModal 
+            isOpen={isImageModalOpen} 
+            onClose={() => setIsImageModalOpen(false)} 
+            title="Are You Sure You Want To Delete This Shader?"
+            >
+            {/*<p className="mt-4 text-red-500">Are You Sure You Want To Delete This Shader?</p> */}
+            <div className='flex items-center gap-4'>
+                <button style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#ff0000',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                }} onClick={handleDeleteShader}>Yes, Delete it</button>
+
+                <button style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#0070f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                }} onClick={() => setIsImageModalOpen(false)}>No, Keep it</button>
+            </div>
+            </PopupModal>
+            </div>
+
+             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className='m-0.5'></input>
 
             {/*Create an input with a checkbox here that uses onChange with the visibilityBool */}
             <label htmlFor="privBox">Public </label>
             <input name='privBox' type="checkbox" defaultChecked={shader.public} onChange={(e) => setShaderVis(e.target.checked)}></input>
+
+            
             
         
             <CodeEditor
@@ -195,7 +255,7 @@ export default function ShaderEditor({ shader } : {shader: Shader}) {
                     marginRight: '5px'
                 }}
             >
-              Save Shader
+              Fork Shader
             </button>)
             ) : 
             (<button 
@@ -210,10 +270,15 @@ export default function ShaderEditor({ shader } : {shader: Shader}) {
                     marginRight: '5px'
                 }}
             >
-              Login to save
+              Login To Save
             </button>)}
 
             {/*session? (<p>logged in</p>) : (<p>logged out</p>)*/}
+
+
+
+            
         </div>
+        
     );
 }

@@ -142,7 +142,7 @@ const ShaderEditor: React.FC = () => {
                     marginRight: '5px'
                 }}
             >
-              Login to save
+              Login To Save
             </button>)}
 
             {/*session? (<p>logged in</p>) : (<p>logged out</p>)*/}

@@ -6,7 +6,7 @@ export default function ShaderCreatePage() {
   return (
     <>
     <Navbar />
-    <main>
+    <main className="flex min-h-screen w-full items-center justify-center">
     <ShaderClientSide />
     </main>
     </>
