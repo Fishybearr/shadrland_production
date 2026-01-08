@@ -44,7 +44,7 @@ export default function ShaderCard({ shader }: { shader: ShaderWithAuthor }) {
         <h3 className="text-lg font-medium text-white truncate">{shader.title}</h3>
         <div className="flex justify-between items-center mt-2">
           <span className="text-xs text-gray-500">
-            <Link href={`profile/${shader.author.name}`}>{shader.author.name}</Link> | {new Date(shader.createdAt).toLocaleDateString()}
+            <Link href={`/profile/${shader.author.name}`}>{shader.author.name}</Link> | {new Date(shader.createdAt).toLocaleDateString()}
           </span>
           { /*<button className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-white" onClick={handleEditClick}>
             Open Editor
