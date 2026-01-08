@@ -5,9 +5,18 @@ import { Canvas } from "@react-three/fiber";
 import { View } from "@react-three/drei";
 import { Shader } from "@/prisma/app/generated/prisma/client";
 import ShaderCard from "../ShaderCard/ShaderCard";
+import { useEffect,useState } from "react";
+
 
 export default function ShadersGrid({ shaders }: { shaders: Shader[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const [canvasHeight, setCanvasHeight] = useState('100vh');
+
+  useEffect(() => {
+  // Lock the height to actual pixels so the address bar doesn't shake the canvas
+  setCanvasHeight(`${window.innerHeight}px`);
+  }, []);
 
   //TODO Make sure private shaders are only rendered for owners
   return (
@@ -22,11 +31,12 @@ export default function ShadersGrid({ shaders }: { shaders: Shader[] }) {
       {/* 2. The Single Global Canvas (Fixed Background) */}
       <Canvas
       style={{
+    height: canvasHeight,
     position: 'fixed',
     top: 0,
     left: 0,
     width: '100vw',
-    height: '100vh',
+    //height: '100vh',
     pointerEvents: 'none',
     willChange: 'transform',
   }}
