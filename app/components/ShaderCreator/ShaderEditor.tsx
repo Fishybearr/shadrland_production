@@ -9,7 +9,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 const ShaderEditor: React.FC = () => {
     const { setShaderText } = useShaderContext(); 
-    const [inputText, setInputText] = useState('');
+    const [inputText, setInputText] = useState(`void mainImage(out vec4 fragColor, in vec2 fragCoord)\n{\n   fragColor = vec4(0.9, 0.1, 0.8, 1.0);\n}`);
 
     //get the session info
     const { data: session, status } = useSession()
