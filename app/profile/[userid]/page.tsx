@@ -23,7 +23,8 @@ export default async function ProfilePage({params}: ProfilePageProps)
         },
         include: {
             shaders: {
-                orderBy: {createdAt: 'asc'}
+                orderBy: {createdAt: 'asc'},
+                include: {author: true}
             }
         }
     });

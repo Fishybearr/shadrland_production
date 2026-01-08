@@ -7,12 +7,17 @@ import { Canvas } from '@react-three/fiber';
 import ShaderEditor from '../../components/ShaderEditor/ShaderEditor';
 import { SessionProvider } from 'next-auth/react';
 import { Shader } from '@/prisma/app/generated/prisma/client';
+import { Prisma } from "@/prisma/app/generated/prisma/client";
+
+type ShaderWithAuthor = Prisma.ShaderGetPayload<{
+  include: { author: true }
+}>;
 
 const ShaderPlane = dynamic(() => import('../../components/ShaderRenderer/shaderPlane'), {
   ssr: false,
 });
 
-export default function ShaderClientLayout({shader}: {shader: Shader}) {
+export default function ShaderClientLayout({shader}: {shader: ShaderWithAuthor}) {
   return (
     <ShaderProvider>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>

@@ -11,14 +11,19 @@ import { useRouter } from 'next/navigation'
 import { Shader } from '@/prisma/app/generated/prisma/client';
 import Image from "next/image"
 import PopupModal from "../../components/PopupModal/PopupModal"
+import { Prisma } from "@/prisma/app/generated/prisma/client";
 
 //This is the actual editor for pre existing shaders
 // Needs to validate the user and read input from the
 // passed in shaderID
 
 
+type ShaderWithAuthor = Prisma.ShaderGetPayload<{
+  include: { author: true }
+}>;
 
-export default function ShaderEditor({ shader } : {shader: Shader}) {
+
+export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
 
     const { setShaderText } = useShaderContext(); 
     const [inputText, setInputText] = useState(shader.shaderText);
@@ -147,7 +152,8 @@ export default function ShaderEditor({ shader } : {shader: Shader}) {
              <h3>GLSL Fragment Shader Editor</h3>
 
             {/*show trash can if owner is viewing shader */}
-            {(session?.user?.id === shader.authorId) && <Image onClick={() => setIsImageModalOpen(true)} style={{marginLeft: 'auto', color:'#ff0000'}} src={'/assets/icons/bin.png'} alt='trash' width={24} height={24}></Image>}
+            {(session?.user?.id === shader.authorId) ? (<Image onClick={() => setIsImageModalOpen(true)} style={{marginLeft: 'auto', color:'#ff0000'}} src={'/assets/icons/bin.png'} alt='trash' width={24} height={24}></Image>) :
+            (<p style={{marginLeft: 'auto'}}> By {shader.author.name}</p>)}
 
             <PopupModal 
             isOpen={isImageModalOpen} 

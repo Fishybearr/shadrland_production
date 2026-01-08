@@ -6,7 +6,13 @@ import ShaderPlane from "../ShaderRenderer/shaderPlane"; // Your GLSL rendering 
 import { useRouter } from 'next/navigation'
 import { useRef } from "react";
 
-export default function ShaderCard({ shader }: { shader: Shader }) {
+import { Prisma } from "@/prisma/app/generated/prisma/client";
+
+type ShaderWithAuthor = Prisma.ShaderGetPayload<{
+  include: { author: true }
+}>;
+
+export default function ShaderCard({ shader }: { shader: ShaderWithAuthor }) {
 
   const router = useRouter();
   const trackRef = useRef<HTMLDivElement>(null); // 1. Create a ref
@@ -20,7 +26,6 @@ export default function ShaderCard({ shader }: { shader: Shader }) {
     {
       console.log("Liked Shader");
     }
-
 
   return (
     <div className="group flex flex-col bg-neutral-900 rounded-b-xl overflow-hidden border border-neutral-800 hover:border-blue-500 transition-colors">
@@ -38,7 +43,7 @@ export default function ShaderCard({ shader }: { shader: Shader }) {
         <h3 className="text-lg font-medium text-white truncate">{shader.title}</h3>
         <div className="flex justify-between items-center mt-2">
           <span className="text-xs text-gray-500">
-            {new Date(shader.createdAt).toLocaleDateString()}
+            {shader.author.name} | {new Date(shader.createdAt).toLocaleDateString()}
           </span>
           { /*<button className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-white" onClick={handleEditClick}>
             Open Editor

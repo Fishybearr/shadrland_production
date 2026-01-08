@@ -3,6 +3,11 @@ import { notFound } from 'next/navigation'
 import { auth } from '@/auth'
 import Navbar from '@/app/components/NavBar/navbar'
 import EditShaderClientSide from './EditShaderClientSide'
+import { Prisma } from "@/prisma/app/generated/prisma/client";
+
+type ShaderWithAuthor = Prisma.ShaderGetPayload<{
+  include: { author: true }
+}>;
 
 interface EditPageProps
 {
@@ -17,7 +22,8 @@ export default async function EditShader({params}: EditPageProps)
     const shader = await prisma.shader.findFirst({
         where: {
             id: shaderid,
-        }
+        },
+        include: { author: true}
     });
 
     //if the shader doesn't exist then redirect to 404

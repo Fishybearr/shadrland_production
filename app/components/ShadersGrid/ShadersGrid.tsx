@@ -5,8 +5,13 @@ import { Canvas } from "@react-three/fiber";
 import { View } from "@react-three/drei";
 import { Shader } from "@/prisma/app/generated/prisma/client";
 import ShaderCard from "../ShaderCard/ShaderCard";
+import { Prisma } from "@/prisma/app/generated/prisma/client";
 
-export default function ShadersGrid({ shaders }: { shaders: Shader[] }) {
+type ShaderWithAuthor = Prisma.ShaderGetPayload<{
+  include: { author: true }
+}>;
+
+export default function ShadersGrid({ shaders }: { shaders: ShaderWithAuthor[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   //TODO Make sure private shaders are only rendered for owners
