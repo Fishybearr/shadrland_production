@@ -18,7 +18,7 @@ export default async function Navbar() {
                <Link href={'/createshader'}>
         <Image src={'/assets/icons/add.png'} alt="create shader Icon" width={24} height={24} priority></Image>
         </Link>
-            <Link href={`/profile/${session.user?.id}`}>{session.user?.name}</Link>
+            <Link href={`/profile/${session.user?.name}`}>{session.user?.name}</Link>
             <SignOutButton />
           </div>
         ) : (

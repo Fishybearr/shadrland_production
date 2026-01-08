@@ -15,7 +15,18 @@ export default async function SignUp(formData: FormData)
    //hash password
    const hashedPassword = await bcrypt.hash(password,12);
 
-   console.log(email + password + name)
+   //console.log(email + password + name)
+
+   //check if username or email are in use
+   const registeredUser = await prisma.user.findFirst({
+    where: {OR : [{email: email},{name: name}]},
+   })
+
+   //throw an error for now if we try to make a user with a registered username or email
+   if(registeredUser)
+    {
+        throw new Error("Username or email already registered");
+    }
 
    //add a new user to the db
    await prisma.user.create({

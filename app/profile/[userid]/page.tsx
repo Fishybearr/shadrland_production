@@ -19,7 +19,7 @@ export default async function ProfilePage({params}: ProfilePageProps)
     {/*Check if id in url is linked to a user */}
     const user = await prisma.user.findFirst({
         where: {
-            id: userid,
+            name: userid,
         },
         include: {
             shaders: {
