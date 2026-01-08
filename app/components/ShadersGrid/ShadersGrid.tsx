@@ -28,6 +28,7 @@ export default function ShadersGrid({ shaders }: { shaders: Shader[] }) {
     width: '100vw',
     height: '100vh',
     pointerEvents: 'none',
+    willChange: 'transform',
   }}
   // 'frames: Infinity' ensures the canvas doesn't "sleep" when you scroll
   frameloop="always"

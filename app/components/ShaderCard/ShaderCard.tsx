@@ -4,10 +4,12 @@ import { View } from "@react-three/drei";
 import { Shader } from "@/prisma/app/generated/prisma/client";
 import ShaderPlane from "../ShaderRenderer/shaderPlane"; // Your GLSL rendering component
 import { useRouter } from 'next/navigation'
+import { useRef } from "react";
 
 export default function ShaderCard({ shader }: { shader: Shader }) {
 
   const router = useRouter();
+  const trackRef = useRef<HTMLDivElement>(null); // 1. Create a ref
 
   const handleEditClick = () => 
         {
@@ -23,8 +25,8 @@ export default function ShaderCard({ shader }: { shader: Shader }) {
   return (
     <div className="group flex flex-col bg-neutral-900 rounded-b-xl overflow-hidden border border-neutral-800 hover:border-blue-500 transition-colors">
       {/* 3D Viewport Area */}
-      <div onClick={handleEditClick} className="relative w-full aspect-2/1 bg-black">
-        <View className="absolute inset-0">
+      <div ref={trackRef} onClick={handleEditClick} className="relative w-full aspect-2/1 bg-black">
+        <View track={trackRef as React.RefObject<HTMLElement>} className="absolute inset-0">
           {/*<ShaderPlane shaderCode={shader.shaderText} />*/}
           <ShaderPlane shaderCode={shader.shaderText} ignoreArgs={false}/>
           <perspectiveCamera position={[0, 0, 1]} />
