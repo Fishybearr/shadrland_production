@@ -40,6 +40,7 @@ const ShaderEditor: React.FC = () => {
             if(result.success)
                 {
                     alert("Shader Saved");
+                    router.push(`/shader/${result.shaderId}`)
                 }
             else
                 {
