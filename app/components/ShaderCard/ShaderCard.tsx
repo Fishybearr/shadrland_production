@@ -21,7 +21,7 @@ export default function ShaderCard({ shader }: { shader: Shader }) {
 
 
   return (
-    <div className="group flex flex-col bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 hover:border-blue-500 transition-colors">
+    <div className="group flex flex-col bg-neutral-900 rounded-b-xl overflow-hidden border border-neutral-800 hover:border-blue-500 transition-colors">
       {/* 3D Viewport Area */}
       <div onClick={handleEditClick} className="relative w-full aspect-2/1 bg-black">
         <View className="absolute inset-0">
