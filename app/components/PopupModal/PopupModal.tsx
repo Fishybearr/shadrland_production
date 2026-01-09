@@ -45,7 +45,10 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                 
                 {children}
 
-                <div className="mt-4 flex justify-end">
+
+                {/*This is the close button */}
+
+              {/*   <div className="mt-4 flex justify-end">
                   <button
                     type="button"
                     className="text-sm text-gray-400 hover:text-white"
@@ -53,7 +56,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                   >
                     Close
                   </button>
-                </div>
+                </div> */}
               </Dialog.Panel>
             </Transition.Child>
           </div>

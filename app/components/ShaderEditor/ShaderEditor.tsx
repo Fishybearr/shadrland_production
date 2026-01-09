@@ -70,7 +70,7 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
             const result = await UpdateShader(inputText,title,shaderVis,shader.id);
             if(result.success)
                 {
-                    alert("Shader Updated");
+                    //alert("Shader Updated");
                 }
             else
                 {
@@ -91,7 +91,7 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
             const result = await ShaderSaveAs(inputText,title,shaderVis);
             if(result.success)
                 {
-                    alert("New shader created");
+                    //alert("New shader created");
                     //Reroute to new shader here
                     router.push(`/shader/${result.shaderId}`)
                 }
@@ -158,10 +158,10 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
             <PopupModal 
             isOpen={isImageModalOpen} 
             onClose={() => setIsImageModalOpen(false)} 
-            title="Are You Sure You Want To Delete This Shader?"
+            title={`Are you sure you want to delete "${shader.title}"`}
             >
             {/*<p className="mt-4 text-red-500">Are You Sure You Want To Delete This Shader?</p> */}
-            <div className='flex items-center gap-4'>
+            <div className='flex justify-center align-middle gap-4 w-full pt-1 pb-1'>
                 <button style={{
                     padding: '10px 20px',
                     backgroundColor: '#ff0000',
@@ -278,6 +278,16 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
             >
               Login To Save
             </button>)}
+
+                {/*This needs to be some kind of hook
+                that gets updated when the shader get's updated */}
+            Last Updated: {new Date(shader.updatedAt).toLocaleDateString(undefined, {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+})}
 
             {/*session? (<p>logged in</p>) : (<p>logged out</p>)*/}
 

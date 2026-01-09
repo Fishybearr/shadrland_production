@@ -3,7 +3,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useShaderContext } from '../../context/ShaderContext'; 
 import styles  from './ShaderEditor.module.css';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import SaveShaderButton from "../SaveShaderButton/SaveShaderButton";
 import { SaveShader } from '@/app/actions/saveShader';
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
