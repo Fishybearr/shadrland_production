@@ -38,7 +38,7 @@ const ShaderEditor: React.FC = () => {
             const result = await SaveShader(inputText,title,shaderVis);
             if(result.success)
                 {
-                    alert("Shader Saved");
+                    //alert("Shader Saved");
                     router.push(`/shader/${result.shaderId}`)
                 }
             else

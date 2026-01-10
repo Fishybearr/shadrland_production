@@ -9,7 +9,8 @@ import { DeletShader } from '@/app/actions/DeleteShader';
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from "next/image"
-import PopupModal from "../../components/PopupModal/PopupModal"
+import PopupModal from "../PopupModals/PopupModal"
+import ForkShaderModal from "@/app/components/PopupModals/ForkShaderModal"
 import { Prisma } from "@/prisma/app/generated/prisma/client";
 import Link from 'next/link';
 
@@ -47,7 +48,7 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
     // Possibly in a popup
     const [title, setTitle] = useState(shaderTitle)
 
-    const [shaderVis, setShaderVis] = useState(true);
+    const [shaderVis, setShaderVis] = useState(shader.public);
 
     // If this is false, we want to update the 
     // save functionality to
@@ -145,11 +146,17 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
 
         const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
+        //Fork Modal
+        const [isForkModalOpen, setIsForkModalOpen] = useState(false);
+
     return (
         <div className={styles.mainContainer}>
 
             <div className="flex items-center gap-4">
-             <h3>GLSL Fragment Shader Editor</h3>
+            
+
+            {/*if user owns shader turn title into text box */}
+            {session?.user?.id === shader.authorId?  (<input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className='m-0.5'></input>) : (<h3>{shader.title}</h3>) } 
 
             {/*show trash can if owner is viewing shader */}
             {(session?.user?.id === shader.authorId) ? (<Image onClick={() => setIsImageModalOpen(true)} style={{marginLeft: 'auto', color:'#ff0000'}} src={'/assets/icons/bin.png'} alt='trash' width={24} height={24}></Image>) :
@@ -185,11 +192,9 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
             </PopupModal>
             </div>
 
-             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className='m-0.5'></input>
-
-            {/*Create an input with a checkbox here that uses onChange with the visibilityBool */}
-            <label htmlFor="privBox">Public </label>
-            <input name='privBox' type="checkbox" defaultChecked={shader.public} onChange={(e) => setShaderVis(e.target.checked)}></input>
+            {/*Public toggle that only appears if user owns the shader */}
+            {session?.user?.id === shader.authorId && <label htmlFor="privBox">Public </label>}
+            {session?.user?.id === shader.authorId && <input name='privBox' type="checkbox" defaultChecked={shader.public} onChange={(e) => setShaderVis(e.target.checked)}></input>}
 
             
             
@@ -249,8 +254,9 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
               Update Shader
             </button>)
 
+                //This should open a modal that then handles saveAs
             : (<button 
-                onClick={handleShaderSaveAs}
+                onClick={() => setIsForkModalOpen(true)}
                 style={{
                     padding: '10px 20px',
                     backgroundColor: '#0070f3',
@@ -279,19 +285,48 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
               Login To Save
             </button>)}
 
-                {/*This needs to be some kind of hook
-                that gets updated when the shader get's updated */}
+                {/*This should be right aligned in the future */}  
             Last Updated: {new Date(shader.updatedAt).toLocaleDateString(undefined, {
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-})}
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            })}
 
             {/*session? (<p>logged in</p>) : (<p>logged out</p>)*/}
 
+            <ForkShaderModal
+            isOpen={isForkModalOpen} 
+            onClose={() => setIsForkModalOpen(false)} 
+            title={`Fork "${shader.title}"?`}
+            > 
+            <label htmlFor="shaderName">Shader Name: </label>
+            <input name="shaderName"type="text" value={title} onChange={(e) => setTitle(e.target.value)} className='m-0.5'></input>
+            <br></br>
 
+            {/*Create an input with a checkbox here that uses onChange with the visibilityBool */}
+            <label htmlFor="privBox">Public: </label>
+            <input name='privBox' type="checkbox" defaultChecked={shader.public} onChange={(e) => setShaderVis(e.target.checked)}></input>
+
+            <br></br>
+            {/*Button for doing the actual fork */}
+            <button 
+                onClick={handleShaderSaveAs}
+                style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#0070f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginRight: '5px'
+                }}
+            >
+              Fork Shader
+            </button>
+
+            </ForkShaderModal>
 
             
         </div>

@@ -4,10 +4,11 @@ import { View } from "@react-three/drei";
 import { Shader } from "@/prisma/app/generated/prisma/client";
 import ShaderPlane from "../ShaderRenderer/shaderPlane"; // Your GLSL rendering component
 import { useRouter } from 'next/navigation'
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { Prisma } from "@/prisma/app/generated/prisma/client";
 import Link from "next/link";
+import Image from "next/image";
 
 type ShaderWithAuthor = Prisma.ShaderGetPayload<{
   include: { author: true }
@@ -18,13 +19,20 @@ export default function ShaderCard({ shader }: { shader: ShaderWithAuthor }) {
   const router = useRouter();
   const trackRef = useRef<HTMLDivElement>(null); // 1. Create a ref
 
+  const [likeIcon, setLikeIcon] = useState('/assets/icons/LikeEmpty.png');
+
   const handleEditClick = () => 
         {
             router.push(`/shader/${shader.id}`)
         }
 
+  
+  //TODO: using setLikeIcon is refreshing the whole page which we
+  // don't want
+  //Also nned to implement the actual liking functionality
   const handleLike = () => 
     {
+      setLikeIcon('/assets/icons/LikeFull.png');
       console.log("Liked Shader");
     }
 
@@ -49,7 +57,9 @@ export default function ShaderCard({ shader }: { shader: ShaderWithAuthor }) {
           { /*<button className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-white" onClick={handleEditClick}>
             Open Editor
           </button> */}
-          <button onClick={handleLike} className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-white">Like</button>
+
+          <Image onClick={handleLike} src={likeIcon} alt='heart icon' width={24} height={24}></Image>
+          {/*<button onClick={handleLike} className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-white">Like</button>*/}
         </div>
       </div>
     </div>
