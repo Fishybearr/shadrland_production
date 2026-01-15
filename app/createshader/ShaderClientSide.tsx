@@ -6,12 +6,35 @@ import { ShaderProvider } from '../context/ShaderContext';
 import { Canvas } from '@react-three/fiber';
 import ShaderEditor from '../components/ShaderCreator/ShaderEditor';
 import { SessionProvider } from 'next-auth/react';
+import { useState } from 'react';
+import Image from 'next/image';
 
 const ShaderPlane = dynamic(() => import('../components/ShaderRenderer/shaderPlane'), {
   ssr: false,
 });
 
 export default function ShaderClientLayout() {
+
+  const [isPaused, setIsPaused] = useState(false);
+  
+  const [pauseIcon, setPauseIcon] = useState('/assets/icons/pause-button.png')
+  
+  const togglePaused = () =>
+    {
+      
+      if(isPaused)
+        {
+          setIsPaused(false);
+          setPauseIcon('/assets/icons/pause-button.png')
+        }
+  
+      else
+        {
+          setIsPaused(true);
+          setPauseIcon('/assets/icons/play-button.png')
+        }
+    }
+
   return (
     <ShaderProvider>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
@@ -40,8 +63,10 @@ export default function ShaderClientLayout() {
             flexShrink: 0,
           }}>
             <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-              <ShaderPlane shaderCode='' ignoreArgs={true} />
+              <ShaderPlane shaderCode='' ignoreArgs={true} paused={isPaused} />
             </Canvas>
+
+            <Image className='m-2' onClick={togglePaused} src={pauseIcon} width={24} height={24} alt='pause icon'></Image>
           </div>
 
           <SessionProvider>

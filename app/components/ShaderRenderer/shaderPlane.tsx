@@ -9,6 +9,7 @@ interface shaderPlaneParams
 {
   shaderCode: string,
   ignoreArgs: boolean
+  paused: boolean
 }
 
 function ShaderPlane(params: shaderPlaneParams) {
@@ -24,6 +25,9 @@ function ShaderPlane(params: shaderPlaneParams) {
 
   //String to hold source from user
   const rawSource = shaderText || params.shaderCode;
+
+  //the new time var
+  const timeRef = useRef(0);
 
   //This is the wrapper that I need to figure out
   //Making this work will fix all of the reslution issues
@@ -90,43 +94,45 @@ function ShaderPlane(params: shaderPlaneParams) {
     []
   );
 
+  //reset time when we update the shader
   useEffect(() => {
-    if (materialRef.current && rawSource) {
-      // 3. Update the material's fragment shader source
-      //materialRef.current.fragmentShader = finalFragment; 
-      
-      // 4. IMPORTANT: Flag the material for recompilation
-      //materialRef.current.needsUpdate = true; 
+    timeRef.current = 0;
+  }, [rawSource]);
 
-      //reset uTime/clock
-      clock.stop();
-      clock.start();
-      
-    }
-  }, [rawSource]); // Rerun this effect every time shaderText changes
+  //reset the shader when we pause
+  useEffect(() => {
+    if(params.paused)
+      {
+        timeRef.current = 0;
+      }
+  })
 
-  // Update the uniform uTime on every frame
-  useFrame(() => {
+  // Update loop
+  useFrame((state, delta) => {
     if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = clock.getElapsedTime();
+      // 2. Only increment time if NOT paused
+      if (!params.paused) {
+        timeRef.current += delta;
+      }
 
+      // 3. Set uTime to our manual accumulator instead of clock.getElapsedTime()
+      materialRef.current.uniforms.uTime.value = timeRef.current;
 
-      //Update resolution dynamically
-      materialRef.current.uniforms.uResolution.value.set(size.width, size.height)
+      // Update resolution
+      materialRef.current.uniforms.uResolution.value.set(size.width, size.height);
 
-      //Make sure it's still performant enough to
-      //update the  uDate every frame
+      // Update Date (only do this if not paused to save minor CPU cycles, 
+      // or keep it outside if you want iDate to be real-time)
       const now = new Date();
-
-      const midnight = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const secToMid = (now.getTime() - midnight.getTime()) / 1000;
       
-      uniforms.uDate.value.set(
+      materialRef.current.uniforms.uDate.value.set(
         now.getFullYear(),
         now.getMonth(),
         now.getDate(),
         secToMid
-      )
+      );
     }
   });
 

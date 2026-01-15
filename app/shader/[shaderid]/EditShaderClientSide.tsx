@@ -8,6 +8,8 @@ import ShaderEditor from '../../components/ShaderEditor/ShaderEditor';
 import { SessionProvider } from 'next-auth/react';
 import { Shader } from '@/prisma/app/generated/prisma/client';
 import { Prisma } from "@/prisma/app/generated/prisma/client";
+import { useState } from 'react';
+import Image from "next/image";
 
 type ShaderWithAuthor = Prisma.ShaderGetPayload<{
   include: { author: true }
@@ -17,7 +19,32 @@ const ShaderPlane = dynamic(() => import('../../components/ShaderRenderer/shader
   ssr: false,
 });
 
+
+
+
+
 export default function ShaderClientLayout({shader}: {shader: ShaderWithAuthor}) {
+
+  const [isPaused, setIsPaused] = useState(false);
+
+  const [pauseIcon, setPauseIcon] = useState('/assets/icons/pause-button.png')
+
+  const togglePaused = () =>
+  {
+    
+    if(isPaused)
+      {
+        setIsPaused(false);
+        setPauseIcon('/assets/icons/pause-button.png')
+      }
+
+    else
+      {
+        setIsPaused(true);
+        setPauseIcon('/assets/icons/play-button.png')
+      }
+  }
+
   return (
     <ShaderProvider>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
@@ -26,8 +53,9 @@ export default function ShaderClientLayout({shader}: {shader: ShaderWithAuthor})
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: '30px', width: '100%', maxWidth: '1400px', alignItems: 'flex-start'}}>
           <div style={{ width: '800px', height: '400px', border: '2px solid #333', borderRadius: '10px', position: 'sticky', top: 'calc(50vh - 200px)', backgroundColor: '#000', flexShrink: 0 }}>
             <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-              <ShaderPlane shaderCode={shader.shaderText} ignoreArgs={true} />
+              <ShaderPlane shaderCode={shader.shaderText} ignoreArgs={true} paused={isPaused} />
             </Canvas>
+            <Image className='m-2' onClick={togglePaused} src={pauseIcon} width={24} height={24} alt='pause icon'></Image>
           </div>
 
           <SessionProvider>
