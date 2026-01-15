@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import NavBar from "../components/NavBar/navbar"
 import prisma from "@/lib/prisma"
 import ShadersGrid from "../components/ShadersGrid/ShadersGrid"
+import BottomInfoBanner from "../components/BottomInfoBanner/BottomInfoBanner"
 
 
 export default async function HomePage()
@@ -37,6 +38,8 @@ export default async function HomePage()
     <main>
         <ShadersGrid shaders={shadersList}></ShadersGrid>
     </main>
+
+    <BottomInfoBanner />
     
     </>)
 }
