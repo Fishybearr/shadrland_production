@@ -26,7 +26,9 @@ export default function ShaderCard({ shader }: { shader: ShaderWithAuthor }) {
             router.push(`/shader/${shader.id}`)
         }
 
-  const [mouseHovered, setMouseHovered] = useState(false)
+  //const [mouseHovered, setMouseHovered] = useState(false)
+
+  const isHovered = useRef(false);
 
   
   //TODO: using setLikeIcon is refreshing the whole page which we
@@ -42,11 +44,11 @@ export default function ShaderCard({ shader }: { shader: ShaderWithAuthor }) {
     <div className="group flex flex-col bg-neutral-900 rounded-b-xl overflow-hidden border border-neutral-800 hover:border-blue-500 transition-colors">
       {/* 3D Viewport Area */}
       <div ref={trackRef} onClick={handleEditClick} className="relative w-full aspect-2/1 bg-black"
-      onMouseEnter={() => setMouseHovered(true)} 
-      onMouseLeave={() => setMouseHovered(false)}>
+      onMouseEnter={() => {isHovered.current = true;}} 
+      onMouseLeave={() => {isHovered.current = false;}}>
         <View track={trackRef as React.RefObject<HTMLElement>} className="absolute inset-0">
           {/*<ShaderPlane shaderCode={shader.shaderText} />*/}
-          <ShaderPlane shaderCode={shader.shaderText} ignoreArgs={false} paused={!mouseHovered}/>
+          <ShaderPlane shaderCode={shader.shaderText} ignoreArgs={false} paused={true} hoverRef={isHovered}/>
           <perspectiveCamera position={[0, 0, 1]} />
         </View>
       </div>

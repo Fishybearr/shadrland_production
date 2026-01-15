@@ -9,7 +9,8 @@ interface shaderPlaneParams
 {
   shaderCode: string,
   ignoreArgs: boolean
-  paused: boolean
+  paused: boolean,
+  hoverRef: React.RefObject<boolean>
 }
 
 function ShaderPlane(params: shaderPlaneParams) {
@@ -109,9 +110,18 @@ function ShaderPlane(params: shaderPlaneParams) {
 
   // Update loop
   useFrame((state, delta) => {
+
+    //skip all rendering logic for this frame if we're paused
+    //if(params.paused) return;
+
+    //TODO: need to avoid using the pause state as it will cause
+    // a complete rerender every frame, so we need to use
+    // some kind of useRef for our play/pause button
+
+    //if we are not paused, update time and date
     if (materialRef.current) {
-      // 2. Only increment time if NOT paused
-      if (!params.paused) {
+
+      if (params.hoverRef.current) {
         timeRef.current += delta;
 
         const now = new Date();
@@ -124,6 +134,29 @@ function ShaderPlane(params: shaderPlaneParams) {
         now.getDate(),
         secToMid
       );
+      }
+       
+      // 2. Only increment time if NOT paused
+      /*
+      else if (!params.paused) {
+        timeRef.current += delta;
+
+        const now = new Date();
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const secToMid = (now.getTime() - midnight.getTime()) / 1000;
+      
+      materialRef.current.uniforms.uDate.value.set(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        secToMid
+      );
+      }
+      */
+
+      else {
+        // Optional: Reset time if you want it to snap back to frame 0
+        timeRef.current = 0; 
       }
 
       // 3. Set uTime to our manual accumulator instead of clock.getElapsedTime()

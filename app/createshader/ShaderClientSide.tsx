@@ -6,7 +6,7 @@ import { ShaderProvider } from '../context/ShaderContext';
 import { Canvas } from '@react-three/fiber';
 import ShaderEditor from '../components/ShaderCreator/ShaderEditor';
 import { SessionProvider } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 
 const ShaderPlane = dynamic(() => import('../components/ShaderRenderer/shaderPlane'), {
@@ -15,25 +15,25 @@ const ShaderPlane = dynamic(() => import('../components/ShaderRenderer/shaderPla
 
 export default function ShaderClientLayout() {
 
-  const [isPaused, setIsPaused] = useState(false);
+  const isPaused = useRef(true);
   
   const [pauseIcon, setPauseIcon] = useState('/assets/icons/pause-button.png')
   
   const togglePaused = () =>
-    {
-      
-      if(isPaused)
-        {
-          setIsPaused(false);
-          setPauseIcon('/assets/icons/pause-button.png')
-        }
-  
-      else
-        {
-          setIsPaused(true);
-          setPauseIcon('/assets/icons/play-button.png')
-        }
-    }
+  {
+    
+    if(isPaused.current === false)
+      {
+        isPaused.current = true;
+        setPauseIcon('/assets/icons/pause-button.png')
+      }
+
+    else
+      {
+        isPaused.current = false;
+        setPauseIcon('/assets/icons/play-button.png')
+      }
+  }
 
   return (
     <ShaderProvider>
@@ -63,7 +63,7 @@ export default function ShaderClientLayout() {
             flexShrink: 0,
           }}>
             <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-              <ShaderPlane shaderCode='' ignoreArgs={true} paused={isPaused} />
+              <ShaderPlane shaderCode='' ignoreArgs={true} paused={true} hoverRef={isPaused} />
             </Canvas>
 
             <Image className='m-2' onClick={togglePaused} src={pauseIcon} width={24} height={24} alt='pause icon'></Image>
