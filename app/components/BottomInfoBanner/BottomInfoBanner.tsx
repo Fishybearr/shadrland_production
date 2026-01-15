@@ -24,7 +24,7 @@ export default function BottomInfoBanner()
         if (!isBannerVisible) return null;
 
         return(<>
-        <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 animate-in slide-in-from-bottom duration-500">
+        <div className="fixed bottom-0 left-0 right-0 z-100 p-4 animate-in slide-in-from-bottom duration-500">
       <div className="mx-auto max-w-xl bg-neutral-900 border border-neutral-700 rounded-xl p-4 shadow-2xl flex items-center justify-between gap-4">
         <div className="flex-1">
           <p className="text-sm font-medium text-white">

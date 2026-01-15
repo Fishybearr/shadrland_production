@@ -113,6 +113,17 @@ function ShaderPlane(params: shaderPlaneParams) {
       // 2. Only increment time if NOT paused
       if (!params.paused) {
         timeRef.current += delta;
+
+        const now = new Date();
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const secToMid = (now.getTime() - midnight.getTime()) / 1000;
+      
+      materialRef.current.uniforms.uDate.value.set(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        secToMid
+      );
       }
 
       // 3. Set uTime to our manual accumulator instead of clock.getElapsedTime()
@@ -123,16 +134,7 @@ function ShaderPlane(params: shaderPlaneParams) {
 
       // Update Date (only do this if not paused to save minor CPU cycles, 
       // or keep it outside if you want iDate to be real-time)
-      const now = new Date();
-      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const secToMid = (now.getTime() - midnight.getTime()) / 1000;
       
-      materialRef.current.uniforms.uDate.value.set(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        secToMid
-      );
     }
   });
 
