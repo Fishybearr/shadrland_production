@@ -49,26 +49,18 @@ export default async function SignUp(prevState: any, formData: FormData)
     },
    })
 
-   redirect("/login")
    }
 
+   //NOTE(redirect throws an error so we need to have logic to let that pass)
    //return the error message to the page
-   catch(e)
-   {
+catch (e: any) {
 
-    //print generic error message if we don't have one
-    if(e === null || e === "" )
-        {
-            return "An Unexpected Error has Occured";
-        }
-    
-    
-    else
-        {
-            return `${e}`;
-        }
-    
+        // Only return an error string if it's NOT a redirect error
+        if (e.message === "NEXT_REDIRECT") throw e; 
+
+        return e.message || "An Unexpected Error has Occurred";
    }
 
-   
+   // 2. Perform redirect OUTSIDE of the try/catch block
+   redirect("/login");
 }
