@@ -92,6 +92,7 @@ const ShaderEditor: React.FC = () => {
                  style={{
                     fontSize: 14,
                     backgroundColor: "#1e1e1e",
+                    color: "#ededed",
                     fontFamily: 'Fira Code, monospace',
                     borderRadius: '5px',
                     minHeight: 250,

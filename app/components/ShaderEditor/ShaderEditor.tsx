@@ -209,6 +209,7 @@ export default function ShaderEditor({ shader } : {shader: ShaderWithAuthor}) {
                  style={{
                     fontSize: 14,
                     backgroundColor: "#1e1e1e",
+                    color: "#ededed",
                     fontFamily: 'Fira Code, monospace',
                     borderRadius: '5px',
                     minHeight: 250,
